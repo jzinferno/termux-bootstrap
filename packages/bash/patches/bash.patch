@@ -1,0 +1,258 @@
+diff --git a/config-top.h b/config-top.h
+index db4ab6e..ebd2e43 100644
+--- a/config-top.h
++++ b/config-top.h
+@@ -63,7 +63,7 @@
+ /* The default value of the PATH variable. */
+ #ifndef DEFAULT_PATH_VALUE
+ #define DEFAULT_PATH_VALUE \
+-  "/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:."
++  "/data/data/com.jzinferno.termux/files/usr/bin:."
+ #endif
+ 
+ /* If you want to unconditionally set a value for PATH in every restricted
+@@ -74,7 +74,7 @@
+    the Posix.2 confstr () function, or CS_PATH define are not present. */
+ #ifndef STANDARD_UTILS_PATH
+ #define STANDARD_UTILS_PATH \
+-  "/bin:/usr/bin:/sbin:/usr/sbin:/etc:/usr/etc"
++  "/data/data/com.jzinferno.termux/files/usr/bin"
+ #endif
+ 
+ /* The default path for enable -f */
+@@ -97,7 +97,7 @@
+ #define DEFAULT_BASHRC "~/.bashrc"
+ 
+ /* System-wide .bashrc file for interactive shells. */
+-/* #define SYS_BASHRC "/etc/bash.bashrc" */
++#define SYS_BASHRC "/data/data/com.jzinferno.termux/files/usr/etc/bash.bashrc"
+ 
+ /* System-wide .bash_logout for login shells. */
+ /* #define SYS_BASH_LOGOUT "/etc/bash.bash_logout" */
+diff --git a/error.c b/error.c
+index 3e7a2d6..a9a135d 100644
+--- a/error.c
++++ b/error.c
+@@ -456,7 +456,7 @@ trace (format, va_alist)
+   static FILE *tracefp = (FILE *)NULL;
+ 
+   if (tracefp == NULL)
+-    tracefp = fopen("/tmp/bash-trace.log", "a+");
++    tracefp = fopen("/data/data/com.jzinferno.termux/files/usr/tmp/bash-trace.log", "a+");
+ 
+   if (tracefp == NULL)
+     tracefp = stderr;
+diff --git a/examples/loadables/fdflags.c b/examples/loadables/fdflags.c
+index 9f2d089..674c102 100644
+--- a/examples/loadables/fdflags.c
++++ b/examples/loadables/fdflags.c
+@@ -267,7 +267,7 @@ getmaxfd ()
+     return maxfd;
+ #endif
+ 
+-  maxfd = getdtablesize ();
++  maxfd = sysconf(_SC_OPEN_MAX);
+   if (maxfd <= 0)
+     maxfd = HIGH_FD_MAX;
+   for (maxfd--; maxfd > 0; maxfd--)
+diff --git a/examples/loadables/getconf.c b/examples/loadables/getconf.c
+index 75a0a56..3a77618 100644
+--- a/examples/loadables/getconf.c
++++ b/examples/loadables/getconf.c
+@@ -489,8 +489,10 @@ static const struct conf vars[] =
+     { "POSIX2_UPE", _SC_2_UPE, SYSCONF },
+     { "POSIX2_VERSION", _SC_2_VERSION, SYSCONF },
+ 
++#ifdef _CS_PATH
+     { "PATH", _CS_PATH, CONFSTR },
+     { "CS_PATH", _CS_PATH, CONFSTR },
++#endif
+ 
+     /* LFS */
+ #ifdef _CS_LFS_CFLAGS
+@@ -1072,6 +1074,7 @@ getconf_print (const struct conf *c, const char *vpath, int all)
+ 	printf ("%ld\n", value);
+       return (EXECUTION_SUCCESS);
+ 
++#ifndef __ANDROID__
+     case CONFSTR:
+       errno = 0;
+       clen = confstr (cn, (char *) NULL, 0);
+@@ -1092,10 +1095,14 @@ getconf_print (const struct conf *c, const char *vpath, int all)
+ 	printf ("%.*s\n", (int) clen, cvalue);
+       free (cvalue);
+       return (EXECUTION_SUCCESS);
++#endif
+ 
+     case CONSTANT:
+       return (getconf_internal (c, all));
+ 
++#ifdef __ANDROID__
++    case CONFSTR:
++#endif
+     case UNDEFINED:
+       builtin_error ("%s: undefined", c->name);
+       return (EXECUTION_FAILURE);
+diff --git a/lib/malloc/stats.c b/lib/malloc/stats.c
+index b38df9f..13c2b3e 100644
+--- a/lib/malloc/stats.c
++++ b/lib/malloc/stats.c
+@@ -142,7 +142,7 @@ fprint_malloc_stats (s, fp)
+   _print_malloc_stats (s, fp);
+ }
+ 
+-#define TRACEROOT "/var/tmp/maltrace/stats."
++#define TRACEROOT "/data/data/com.jzinferno.termux/files/usr/var/tmp/maltrace/stats."
+ 
+ void
+ trace_malloc_stats (s, fn)
+diff --git a/lib/malloc/table.c b/lib/malloc/table.c
+index e6acbf4..1447281 100644
+--- a/lib/malloc/table.c
++++ b/lib/malloc/table.c
+@@ -390,7 +390,7 @@ mlocation_dump_table ()
+   _location_dump_table (stderr);
+ }
+ 
+-#define LOCROOT "/var/tmp/maltrace/locations."
++#define LOCROOT "/data/data/com.jzinferno.termux/files/usr/var/tmp/maltrace/locations."
+ 
+ void
+ mlocation_write_table ()
+diff --git a/lib/malloc/trace.c b/lib/malloc/trace.c
+index 391ca9d..b749d4c 100644
+--- a/lib/malloc/trace.c
++++ b/lib/malloc/trace.c
+@@ -108,7 +108,7 @@ malloc_trace_bin (n)
+ #endif
+ }
+ 
+-#define TRACEROOT "/var/tmp/maltrace/trace."
++#define TRACEROOT "/data/data/com.jzinferno.termux/files/usr/var/tmp/maltrace/trace."
+ 
+ void
+ malloc_set_tracefn (s, fn)
+diff --git a/lib/readline/complete.c b/lib/readline/complete.c
+index e5d224e..5370982 100644
+--- a/lib/readline/complete.c
++++ b/lib/readline/complete.c
+@@ -2265,7 +2265,7 @@ rl_completion_matches (const char *text, rl_compentry_func_t *entry_function)
+ char *
+ rl_username_completion_function (const char *text, int state)
+ {
+-#if defined (__WIN32__) || defined (__OPENNT)
++#if defined (__WIN32__) || defined (__OPENNT) || defined (__ANDROID__)
+   return (char *)NULL;
+ #else /* !__WIN32__ && !__OPENNT) */
+   static char *username = (char *)NULL;
+diff --git a/lib/readline/rlconf.h b/lib/readline/rlconf.h
+index b6d6a2f..1d1ef74 100644
+--- a/lib/readline/rlconf.h
++++ b/lib/readline/rlconf.h
+@@ -43,7 +43,7 @@
+ #define DEFAULT_INPUTRC "~/.inputrc"
+ 
+ /* The ultimate last-ditch filename for an init file -- system-wide. */
+-#define SYS_INPUTRC "/etc/inputrc"
++#define SYS_INPUTRC "/data/data/com.jzinferno.termux/files/usr/etc/inputrc"
+ 
+ /* If defined, expand tabs to spaces. */
+ #define DISPLAY_TABS
+diff --git a/lib/readline/util.c b/lib/readline/util.c
+index 2e986db..f77d2c0 100644
+--- a/lib/readline/util.c
++++ b/lib/readline/util.c
+@@ -508,7 +508,7 @@ _rl_tropen (void)
+   if (x == 0)
+     x = ".";
+ #else
+-  x = "/var/tmp";
++  x = "/data/data/com.jzinferno.termux/files/usr/var/tmp";
+ #endif
+   snprintf (fnbuf, sizeof (fnbuf), "%s/rltrace.%ld", x, (long)getpid());
+   unlink(fnbuf);
+diff --git a/lib/sh/tmpfile.c b/lib/sh/tmpfile.c
+index ef8b067..1d38f8a 100644
+--- a/lib/sh/tmpfile.c
++++ b/lib/sh/tmpfile.c
+@@ -74,15 +74,11 @@ get_sys_tmpdir ()
+     return sys_tmpdir;
+ #endif
+ 
+-  sys_tmpdir = "/tmp";
++  sys_tmpdir = "/data/data/com.jzinferno.termux/files/usr/tmp";
+   if (file_iswdir (sys_tmpdir))
+     return sys_tmpdir;
+ 
+-  sys_tmpdir = "/var/tmp";
+-  if (file_iswdir (sys_tmpdir))
+-    return sys_tmpdir;
+-
+-  sys_tmpdir = "/usr/tmp";
++  sys_tmpdir = "/data/data/com.jzinferno.termux/files/usr/var/tmp";
+   if (file_iswdir (sys_tmpdir))
+     return sys_tmpdir;
+ 
+diff --git a/lib/termcap/tparam.c b/lib/termcap/tparam.c
+index c4bff08..2018df5 100644
+--- a/lib/termcap/tparam.c
++++ b/lib/termcap/tparam.c
+@@ -34,6 +34,8 @@ extern char *realloc ();
+ #include <string.h>
+ #endif
+ 
++#include <unistd.h>
++
+ #if !defined (HAVE_BCOPY) && (defined (HAVE_STRING_H) || defined (STDC_HEADERS))
+ #  define bcopy(s, d, n)	memcpy ((d), (s), (n))
+ #endif
+diff --git a/pathnames.h.in b/pathnames.h.in
+index 38d0939..ac49d38 100644
+--- a/pathnames.h.in
++++ b/pathnames.h.in
+@@ -22,10 +22,10 @@
+ #define _PATHNAMES_H_
+ 
+ /* The default file for hostname completion. */
+-#define DEFAULT_HOSTS_FILE "/etc/hosts"
++#define DEFAULT_HOSTS_FILE "/data/data/com.jzinferno.termux/files/usr/etc/hosts"
+ 
+ /* The default login shell startup file. */
+-#define SYS_PROFILE "/etc/profile"
++#define SYS_PROFILE "/data/data/com.jzinferno.termux/files/usr/etc/profile"
+ 
+ /* The default location of the bash debugger initialization/startup file. */
+ #define DEBUGGER_START_FILE	"@DEBUGGER_START_FILE@"
+diff --git a/shell.c b/shell.c
+index ebd8965..de532db 100644
+--- a/shell.c
++++ b/shell.c
+@@ -349,12 +349,12 @@ _cygwin32_check_tmp ()
+ {
+   struct stat sb;
+ 
+-  if (stat ("/tmp", &sb) < 0)
+-    internal_warning (_("could not find /tmp, please create!"));
++  if (stat ("/data/data/com.jzinferno.termux/files/usr/tmp", &sb) < 0)
++    internal_warning (_("could not find /data/data/com.jzinferno.termux/files/usr/tmp, please create!"));
+   else
+     {
+       if (S_ISDIR (sb.st_mode) == 0)
+-	internal_warning (_("/tmp must be a valid directory name"));
++	internal_warning (_("/data/data/com.jzinferno.termux/files/usr/tmp must be a valid directory name"));
+     }
+ }
+ #endif /* __CYGWIN__ */
+diff --git a/version.c b/version.c
+index 94c85bd..2a684bb 100644
+--- a/version.c
++++ b/version.c
+@@ -83,7 +83,7 @@ void
+ show_shell_version (extended)
+      int extended;
+ {
+-  printf (_("GNU bash, version %s (%s)\n"), shell_version_string (), MACHTYPE);
++  printf (_("GNU bash built by jzinferno using the Android NDK, version %s (%s)\n"), shell_version_string (), MACHTYPE);
+   if (extended)
+     {
+       printf ("%s\n", _(bash_copyright));

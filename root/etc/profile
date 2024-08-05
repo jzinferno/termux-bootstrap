@@ -1,0 +1,10 @@
+if [ "$BASH" ]; then
+    if [[ "$-" == *"i"* ]]; then
+        if [ -r $PREFIX/etc/bash.bashrc ]; then
+            . $PREFIX/etc/bash.bashrc
+        fi
+        if [ -r ~/.bashrc ]; then
+            . ~/.bashrc
+        fi
+    fi
+fi

@@ -1,0 +1,26 @@
+#!/system/bin/sh
+
+for folder in /system/bin /system/xbin /sbin; do
+    if [ -d $folder ]; then
+        export PATH=$PATH:$folder
+    fi
+done
+
+for file in $PREFIX/bin/bash /system/bin/sh; do
+    if [ -x $file ]; then
+        export SHELL=$file
+        break
+    fi
+done
+
+if tty >/dev/null 2>&1 && [ $# = 0 ]; then
+    if [ -f $PREFIX/etc/motd ]; then
+        cat $PREFIX/etc/motd
+    fi
+fi
+
+if [ ! -d $PREFIX/tmp ]; then
+    mkdir -p $PREFIX/tmp
+fi
+
+exec "$SHELL" "$@"

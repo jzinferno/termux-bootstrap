@@ -1,0 +1,89 @@
+diff --git a/ncurses/tinfo/lib_setup.c b/ncurses/tinfo/lib_setup.c
+index 99097f0..cc4a115 100644
+--- a/ncurses/tinfo/lib_setup.c
++++ b/ncurses/tinfo/lib_setup.c
+@@ -562,21 +562,6 @@ _nc_get_screensize(SCREEN *sp,
+ 		}
+ 	    }
+ 
+-	    /*
+-	     * Finally, look for environment variables.
+-	     *
+-	     * Solaris lets users override either dimension with an environment
+-	     * variable.
+-	     */
+-	    if ((value = _nc_getenv_num("LINES")) > 0) {
+-		*linep = value;
+-		T(("screen size: environment LINES = %d", *linep));
+-	    }
+-	    if ((value = _nc_getenv_num("COLUMNS")) > 0) {
+-		*colp = value;
+-		T(("screen size: environment COLUMNS = %d", *colp));
+-	    }
+-
+ 	    _nc_default_screensize(termp, linep, colp);
+ 	} else {
+ 	    _nc_check_screensize(sp, termp, linep, colp);
+diff --git a/ncurses/tinfo/tinfo_driver.c b/ncurses/tinfo/tinfo_driver.c
+index fd993b8..c74603f 100644
+--- a/ncurses/tinfo/tinfo_driver.c
++++ b/ncurses/tinfo/tinfo_driver.c
+@@ -496,21 +496,6 @@ drv_size(TERMINAL_CONTROL_BLOCK * TCB, int *linep, int *colp)
+ 		    _nc_setenv_num("COLUMNS", *colp);
+ 		}
+ 	    }
+-
+-	    /*
+-	     * Finally, look for environment variables.
+-	     *
+-	     * Solaris lets users override either dimension with an environment
+-	     * variable.
+-	     */
+-	    if ((value = _nc_getenv_num("LINES")) > 0) {
+-		*linep = value;
+-		T(("screen size: environment LINES = %d", *linep));
+-	    }
+-	    if ((value = _nc_getenv_num("COLUMNS")) > 0) {
+-		*colp = value;
+-		T(("screen size: environment COLUMNS = %d", *colp));
+-	    }
+ 	}
+ 
+ 	/* if we can't get dynamic info about the size, use static */
+diff --git a/progs/tic.c b/progs/tic.c
+index fc77b34..785e08a 100644
+--- a/progs/tic.c
++++ b/progs/tic.c
+@@ -389,7 +389,7 @@ open_tempfile(char *filename)
+ {
+     FILE *result = 0;
+ 
+-    _nc_STRCPY(filename, "/tmp/XXXXXX", PATH_MAX);
++    _nc_STRCPY(filename, "/data/data/com.jzinferno.termux/files/usr/tmp/XXXXXX", PATH_MAX);
+ #if HAVE_MKSTEMP
+     {
+ 	int oldmask = (int) umask(077);
+@@ -921,7 +921,7 @@ main(int argc, char *argv[])
+     } else {
+ 	if (infodump == TRUE) {
+ 	    /* captoinfo's no-argument case */
+-	    source_file = "/etc/termcap";
++	    source_file = "/data/data/com.jzinferno.termux/files/usr/etc/termcap";
+ 	    if ((termcap = getenv("TERMCAP")) != 0
+ 		&& (namelst = make_namelist(getenv("TERM"))) != 0) {
+ 		if (access(termcap, F_OK) == 0) {
+diff --git a/progs/tset.c b/progs/tset.c
+index 69f4aba..ed90a0d 100644
+--- a/progs/tset.c
++++ b/progs/tset.c
+@@ -579,8 +579,8 @@ get_termcap_entry(int fd, char *userarg)
+ 	    goto map;
+ 	}
+ #else
+-	if ((fp = fopen("/etc/ttytype", "r")) != 0
+-	    || (fp = fopen("/etc/ttys", "r")) != 0) {
++	if ((fp = fopen("/data/data/com.jzinferno.termux/files/usr/etc/ttytype", "r")) != 0
++	    || (fp = fopen("/data/data/com.jzinferno.termux/files/usr/etc/ttys", "r")) != 0) {
+ 	    char buffer[BUFSIZ];
+ 	    char *s, *t, *d;
+ 
