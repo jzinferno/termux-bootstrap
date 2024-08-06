@@ -40,7 +40,8 @@ export AR=llvm-ar
 export AS=$CC
 export LD=ld.lld
 
-export CFLAGS="-g -O2 -I $TERMUX_PREFIX/include -L $TERMUX_PREFIX/lib"
+export CFLAGS="-g -O2 -I$TERMUX_PREFIX/include"
+export LDFLAGS="-L$TERMUX_PREFIX/lib"
 
 ./configure --prefix=$TERMUX_PREFIX \
   --host=$HOST \
