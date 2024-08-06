@@ -1,0 +1,13 @@
+diff --git a/rlconf.h b/rlconf.h
+index b6d6a2f..1d1ef74 100644
+--- a/rlconf.h
++++ b/rlconf.h
+@@ -43,7 +43,7 @@
+ #define DEFAULT_INPUTRC "~/.inputrc"
+ 
+ /* The ultimate last-ditch filename for an init file -- system-wide. */
+-#define SYS_INPUTRC "/etc/inputrc"
++#define SYS_INPUTRC "/data/data/com.jzinferno.termux/files/usr/etc/inputrc"
+ 
+ /* If defined, expand tabs to spaces. */
+ #define DISPLAY_TABS

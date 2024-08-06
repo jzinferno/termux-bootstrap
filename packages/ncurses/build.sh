@@ -65,3 +65,7 @@ export LD=ld.lld
 
 make -j$(nproc)
 make install.data install.libs install.progs
+
+for lib in form menu ncurses panel; do
+  ln -s lib${lib}w.a $TERMUX_PREFIX/lib/lib${lib}.a
+done

@@ -9,6 +9,7 @@ create_prefix() {
 
 build_packages() {
     "$scripts_dir/../packages/ncurses/build.sh"
+    "$scripts_dir/../packages/readline/build.sh"
     "$scripts_dir/../packages/nano/build.sh"
     "$scripts_dir/../packages/bash/build.sh"
 }
