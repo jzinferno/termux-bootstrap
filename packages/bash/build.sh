@@ -21,23 +21,23 @@ patch -p1 < ../patches/bash.patch
 
 case $architecture in
   aarch64 )
-    export CC=aarch64-linux-android34-clang
-    export CXX=aarch64-linux-android34-clang++
+    export CC=aarch64-linux-android35-clang
+    export CXX=aarch64-linux-android35-clang++
     export HOST=aarch64-linux-android
     ;;
   arm )
-    export CC=armv7a-linux-androideabi34-clang
-    export CXX=armv7a-linux-androideabi34-clang++
+    export CC=armv7a-linux-androideabi35-clang
+    export CXX=armv7a-linux-androideabi35-clang++
     export HOST=arm-linux-androideabi
     ;;
   i686 )
-    export CC=i686-linux-android34-clang
-    export CXX=i686-linux-android34-clang++
+    export CC=i686-linux-android35-clang
+    export CXX=i686-linux-android35-clang++
     export HOST=i686-linux-android
     ;;
   x86_64 )
-    export CC=x86_64-linux-android34-clang
-    export CXX=x86_64-linux-android34-clang++
+    export CC=x86_64-linux-android35-clang
+    export CXX=x86_64-linux-android35-clang++
     export HOST=x86_64-linux-android
     ;;
   * )
