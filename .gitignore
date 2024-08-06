@@ -1,0 +1,12 @@
+CHECKSUMS-sha256.txt
+bootstrap-arm.zip
+bootstrap-i686.zip
+bootstrap-x86_64.zip
+packages/bash/bash-5.2.tar.gz
+packages/bash/bash-5.2/
+packages/nano/nano-8.1.tar.gz
+packages/nano/nano-8.1/
+packages/ncurses/ncurses-6.5.tar.gz
+packages/ncurses/ncurses-6.5/
+packages/readline/readline-8.2.tar.gz
+packages/readline/readline-8.2/
