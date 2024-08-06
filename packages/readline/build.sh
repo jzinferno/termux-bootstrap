@@ -51,7 +51,6 @@ export AS=$CC
 export LD=ld.lld
 
 export CFLAGS="-g -O2 -I $TERMUX_PREFIX/include -L $TERMUX_PREFIX/lib"
-export SHLIB_LIBS="-lncursesw"
 
 ./configure --prefix=$TERMUX_PREFIX \
   --host=$HOST \
