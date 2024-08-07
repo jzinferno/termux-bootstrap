@@ -2,22 +2,12 @@
 
 cd "$(cd "$(dirname "$0")" && pwd)"
 
-if [ ! -f readline-8.2.tar.gz ]; then
-  wget https://mirrors.kernel.org/gnu/readline/readline-8.2.tar.gz
+if [ ! -f libuv-v1.48.0.tar.gz ]; then
+  wget https://dist.libuv.org/dist/v1.48.0/libuv-v1.48.0.tar.gz
 fi
-rm -rf readline-8.2; tar -xf readline-8.2.tar.gz; cd readline-8.2
+rm -rf libuv-v1.48.0; tar -xf libuv-v1.48.0.tar.gz; cd libuv-v1.48.0
 
-for i in {001..013}; do
-  wget https://mirrors.kernel.org/gnu/readline/readline-8.2-patches/readline82-$i 2>/dev/null
-  if [ -f "readline82-$i" ]; then
-    patch -p0 -i readline82-$i
-    rm -f readline82-$i
-  else
-    break
-  fi
-done
-
-patch -p1 < ../patches/readline.patch
+patch -p1 < ../patches/libuv.patch
 
 case $architecture in
   aarch64 )
@@ -50,11 +40,12 @@ export AR=llvm-ar
 export AS=$CC
 export LD=ld.lld
 
+export PLATFORM=android
+sh autogen.sh
+
 ./configure --prefix=$TERMUX_PREFIX \
   --host=$HOST \
-  --with-curses \
-  --enable-multibyte \
-  bash_cv_wcwidth_broken=no
+  --enable-static
 
 make -j$(nproc)
-make install-static
+make install-strip

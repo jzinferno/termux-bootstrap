@@ -10,8 +10,24 @@ create_prefix() {
 build_packages() {
     "$scripts_dir/../packages/ncurses/build.sh"
     "$scripts_dir/../packages/readline/build.sh"
-    "$scripts_dir/../packages/nano/build.sh"
     "$scripts_dir/../packages/bash/build.sh"
+    "$scripts_dir/../packages/nano/build.sh"
+    "$scripts_dir/../packages/libuv/build.sh"
+    "$scripts_dir/../packages/openssl/build.sh"
+    "$scripts_dir/../packages/xmrig/build.sh"
+}
+
+reduce_size() {
+    cd $TERMUX_PREFIX
+    for library in $(find ./lib -name "*.a" -o -name "*.so*"); do
+        llvm-strip --strip-unneeded $library
+    done
+    for binary in $(find ./bin); do
+        file $binary | grep "not stripped" >/dev/null
+        if [ $? -eq 0 ]; then
+            llvm-strip --strip-unneeded $binary
+        fi
+    done
 }
 
 generate_bootstrap() {
@@ -28,6 +44,7 @@ generate_bootstrap() {
 main() {
     create_prefix
     build_packages
+    reduce_size
     generate_bootstrap
 }
 
