@@ -1,0 +1,10 @@
+#!/system/bin/sh
+
+for p in /debug_ramdisk/su /sbin/su /system/sbin/su /system/bin/su /system/xbin/su /su/bin/su /magisk/.core/bin/su; do
+    if [ -x $p ]; then
+        PATH=/debug_ramdisk:/sbin:/sbin/su:/su/bin:/su/xbin:/system/bin:/system/xbin exec $p "$@"
+    fi
+done
+
+echo "No su program found on this device."
+exit 1
