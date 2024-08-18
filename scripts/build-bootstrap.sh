@@ -12,9 +12,6 @@ build_packages() {
     "$scripts_dir/../packages/readline/build.sh"
     "$scripts_dir/../packages/bash/build.sh"
     "$scripts_dir/../packages/nano/build.sh"
-    "$scripts_dir/../packages/libuv/build.sh"
-    "$scripts_dir/../packages/openssl/build.sh"
-    "$scripts_dir/../packages/xmrig/build.sh"
 }
 
 reduce_size() {
@@ -41,11 +38,17 @@ generate_bootstrap() {
     mv "bootstrap-${architecture}.zip" "$scripts_dir/.."
 }
 
+generate_checksums() {
+    cd "$scripts_dir/.."
+    sha256sum bootstrap-* > CHECKSUMS-sha256.txt
+}
+
 main() {
     create_prefix
     build_packages
     reduce_size
     generate_bootstrap
+    generate_checksums
 }
 
 export TERMUX_PREFIX=/data/data/com.jzinferno.termux/files/usr
@@ -63,8 +66,12 @@ case "$1" in
   x86_64 )
     export architecture=x86_64; main
     ;;
+  all )
+    for architecture in aarch64 arm i686 x86_64; do
+      export architecture=$architecture; main
+    done
   * )
     echo "Usage:"
-    echo "  build-bootstrap.sh aarch64|arm|i686|x86_64"
+    echo "  build-bootstrap.sh aarch64|arm|i686|x86_64|all"
     ;;
 esac
